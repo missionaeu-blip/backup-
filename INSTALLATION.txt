@@ -1,0 +1,66 @@
+MISSIONA — ACTUALISATION AUTOMATIQUE DU SITE
+
+Cible : Missiona uniquement (racine public_html). Seve et PannacottaClub ne sont pas remplacés ni modifiés.
+
+COMPORTEMENT
+- La messagerie garde son envoi sans rechargement; les nouveaux messages arrivent côté destinataire en quelques secondes.
+- Les administrateurs disposent d’un salon collectif et peuvent démarrer des conversations privées entre eux; les messages admin sont isolés de la messagerie client/freelance.
+- Dans la messagerie admin : mode plein écran et recherche de projets, entreprises/particuliers et freelances dans le périmètre du compte. Les résultats ouvrent le fil de projet ou le fil direct de l’utilisateur.
+- La rubrique Utilisateurs comporte un raccourci Messagerie pour les comptes accessibles à cet admin.
+- Le bouton « Je suis intéressé » ouvre un brouillon formel avec titre et référence du projet; le freelance peut le modifier, et rien n’est envoyé sans cliquer sur Envoyer.
+- L’entreprise peut consulter le profil complet du freelance sélectionné, portfolio compris, avant et après sa confirmation. Le profil et ses images sont protégés et liés au projet concerné.
+- L’entreprise peut demander un remplacement; l’affectation ne change qu’après décision d’un administrateur autorisé. Le client voit ensuite le nouveau profil et doit confirmer sa proposition.
+- Un administrateur autorisé peut aussi retirer directement l’expert affecté, sans choisir immédiatement de remplaçant; le projet revient en analyse/matching et l’ancien profil est exclu du matching de ce dossier. Toute opération financière engagée/payée ou acceptation du livrable bloque ce retrait.
+- Pour les nouveaux projets affectés ou réaffectés, aucune avance n’est demandée. Après vérification du livrable par Missiona, l’entreprise l’accepte explicitement puis règle le montant total via Stripe. La confirmation Stripe clôture le projet et produit un justificatif consultable/imprimable dans le compte client et envoyé par e-mail.
+- Les projets déjà en cours avec une échéance, un PaymentIntent ou un paiement historique ne sont pas convertis silencieusement : les échéances existantes sont préservées, les paiements engagés bloquent la réaffectation, et la migration de ces dossiers doit être décidée au cas par cas.
+- Le justificatif confirme la transaction; il ne constitue pas une facture fiscale et ne remplace pas la facture de prestation de l’expert.
+- Chaque projet reçoit un identifiant stable de type MIS-AAAA-000001, attribué automatiquement aux projets existants et nouveaux.
+- Les statuts, avancements et autres champs de projets, fichiers livrés, demandes, paiements, factures, évaluations et retraits sont surveillés selon le compte connecté.
+- Les notifications et le compteur de messages non lus se mettent à jour en direct.
+- Quand une donnée suivie change, la page Missiona se met à jour automatiquement. Si un formulaire contient des modifications non enregistrées, la page ne se recharge pas : une bannière propose l’actualisation pour éviter de perdre la saisie.
+- Contrôle toutes les 5 secondes lorsque l’onglet est visible. La discussion admin ajoute trois tables dédiées par migration additive automatique; elle ne modifie pas les conversations client/freelance.
+
+FICHIERS DE CE CORRECTIF
+- messages.php, assets/js/messagerie-live.js : messagerie client/freelance dynamique.
+- admin-chat.php, assets/js/admin-chat.js : salon commun et conversations privées entre administrateurs.
+- messages.php, assets/js/admin-messages.js : recherche admin, mode plein écran, conversations directes utilisateur-admin et brouillon d’intérêt.
+- includes/db.php : tables de discussion admin et numérotation des projets; includes/sidebar.php : liens et compteurs de non-lus.
+- includes/messagerie.php : périmètre des fils et visibilité des manifestations d’intérêt.
+- admin-utilisateurs.php : raccourci vers les conversations.
+- admin-freelance.php, profil.php, assets/js/portfolio-viewer.js, includes/footer.php : clic (ou Entrée/Espace) sur une image du portfolio pour l’ouvrir en plein écran; fermeture avec Échap, clic sur la croix ou hors de l’image.
+- profil.php, portfolio-image.php, profil-expert.php : ajout d’images avec le formulaire portfolio d’origine sur la route `/profil`, rendu d’image protégé avec lien temporaire signé, et accès client au portfolio uniquement depuis le projet autorisé.
+- projet.php : demande de remplacement, retrait admin vers le matching avec contrôles financiers, et acceptation explicite du livrable.
+- admin-matching.php : affectation sans échéance de paiement préalable.
+- includes/stripe.php, includes/stripe-connect.php, paiement.php, paiement-retour.php, stripe-webhook.php : paiement final Stripe après acceptation; la configuration Stripe reste verrouillée en mode test.
+- includes/email.php, recu-paiement.php : envoi du justificatif de transaction et consultation/impression protégée dans l’espace client; ce document n’est pas une facture fiscale.
+- includes/db.php : marqueur de paiement différé, horodatage/identité d’acceptation du livrable, état d’envoi du justificatif et exclusions de freelance par projet après retrait admin.
+- profil.php, includes/functions.php : demande de suppression autonome pour les entreprises/freelances, double confirmation par mot de passe + phrase, blocage des projets actifs et des opérations financières en attente, purge/anonymisation des données personnelles.
+- includes/db.php, includes/facture-pdf.php : migration additive du marqueur de compte supprimé et archive séparée des seules données d’identité nécessaires aux justificatifs financiers conservés.
+- includes/dac7.php, admin-dac7.php : les exports fiscaux historiques réhydratent les champs déclaratifs depuis cette archive; les relances et e-mails sont désactivés pour un compte fermé.
+- dashboard-freelance.php, dashboard-entreprise.php, projets.php, projet.php, admin-projets.php, admin-matching.php, nouveau-projet.php : références affichées et/ou réutilisées.
+- assets/js/app.js : écoute des aperçus de pièces jointes ajoutées en direct et lecteurs adaptés par type de fichier.
+- projet.php, dashboard-entreprise.php, projets.php : action « Prévisualiser » depuis les projets en livraison, formulaire de demande de correction, historique et blocage de l’acceptation tant qu’une nouvelle version vérifiée n’est pas déposée.
+- includes/db.php : migration additive du lien HTTPS de préproduction et historique des demandes de correction.
+- includes/functions.php, download.php : aperçus de PDF, images/SVG assaini, vidéo/audio, texte/code, extraction textuelle Office, inventaire ZIP et fiche d’information pour les formats non rendus nativement.
+- site-preview.php : aperçu statique d’un site fourni en ZIP (index.html + CSS/ressources locales) sans exécuter scripts, formulaires ni liens externes.
+- assets/js/app.js et projet.php : aperçu d’une URL de préproduction en iframe isolée; seules les URL HTTPS publiques sont acceptées.
+- live-updates.php, assets/js/live-updates.js : suivi global des données Missiona.
+- includes/header.php, includes/footer.php : compteur et chargement du suivi.
+
+INSTALLATION
+1. Fais une sauvegarde des fichiers concernés et du .htaccess actuellement installé dans public_html.
+2. Si la racine Missiona contient encore les fichiers PannacottaClub, restaure d’abord la racine Missiona avec le hotfix de racine fourni séparément; n’extrais pas ce correctif dans /seve/ ni dans /pannacotaclub/.
+3. Décompresse ce ZIP dans public_html en gardant les chemins et remplace les fichiers du ZIP. Ne l’extrais ni dans /seve/ ni dans /pannacotaclub/.
+4. Recharge avec Ctrl+F5 et vérifie d’abord l’ajout d’une image JPG/PNG de moins de 8 Mo dans l’onglet Portfolio. Le formulaire réutilise le POST de `/profil` déjà employé par les autres actions de profil, sans endpoint ni redirection `.php` dédiée. Vérifie ensuite depuis deux comptes Missiona : messagerie et fichiers, salon admin et privé admin, recherche/plein écran, raccourci Utilisateurs, brouillon « Je suis intéressé » (sans envoi automatique), référence projet, notifications, changement de statut/avancement et protection des formulaires non enregistrés.
+5. Avec des comptes et clés Stripe de test uniquement : affecte un projet, vérifie que la proposition peut être confirmée sans échéance ni prélèvement, dépose un livrable, fais-le valider par l’équipe, accepte-le côté entreprise, confirme le paiement Stripe, vérifie la clôture du projet, le justificatif imprimable dans le compte et son e-mail. Vérifie aussi demande/refus/validation d’un remplacement, retrait admin d’un expert sans paiement engagé (retour au matching et exclusion de l’ancien profil), blocage avec paiement engagé/acceptation client, et les autorisations de consultation du profil et des images.
+6. Sur des comptes de test uniquement, vérifie que la suppression est bloquée avec projet actif, paiement/facture en attente ou retrait en cours; vérifie aussi l’effacement d’un compte sans historique financier et l’anonymisation d’un compte avec facture payée, puis le rendu PDF de la facture archivée.
+7. Sur un projet de test, vérifie la preview des images, PDF, SVG, vidéo/audio, texte, DOCX/XLSX/PPTX, ZIP/RAR et formats de création; les formats non rendus visuellement présentent une fiche d’information et recommandent un export PDF/PNG. Teste un ZIP contenant `index.html` et ses CSS/images, puis un lien HTTPS de préproduction. Les previews ZIP sont statiques (pas de JavaScript, formulaires ou navigation) ; le lien externe est sandboxé.
+8. Sur le même projet de test, demande une correction, vérifie que l’entreprise ne peut pas accepter/clôturer pendant l’attente, téléverse une nouvelle version en tant qu’expert, fais-la vérifier par Missiona, puis vérifie que la demande passe en résolue et que l’entreprise peut prévisualiser la nouvelle version.
+
+LIMITES ET PRUDENCE
+- Ce correctif est préparé à partir des fichiers du dépôt; il n’a pas été déployé ni testé sur Hostinger. PHP CLI n’étant pas disponible dans l’environnement de préparation, aucun lint ni test d’intégration PHP n’a pu être exécuté. Je ne peux pas téléverser sur le serveur depuis cette conversation. Fais une sauvegarde et vérifie les parcours avant de le considérer en production.
+- Pour les essais de paiement, configure uniquement les clés Stripe de test, le webhook Connect signé (au minimum account.updated et payment_intent.succeeded) et son secret dans la configuration privée. Le code ne doit pas être basculé en paiement réel sans revue juridique, comptable et sécurité distincte.
+- Une modification des données peut entraîner un rechargement automatique des pages de l’espace connecté. Si un formulaire est modifié, la bannière attend une action afin de ne pas effacer le brouillon.
+- Ce n’est pas un WebSocket : l’actualisation est périodique, toutes les 5 secondes, adaptée à l’hébergement mutualisé.
+- Les répertoires et fichiers de données, la configuration privée et le .htaccess racine ne sont pas inclus dans ce ZIP.
+- Les dossiers financiers/fiscaux conservés sont isolés dans la base; la durée de conservation et la purge périodique doivent rester conformes à la politique légale de Missiona et être validées avant mise en production.

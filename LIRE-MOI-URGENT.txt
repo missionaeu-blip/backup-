@@ -1,0 +1,16 @@
+MISSIONA — HOTFIX RACINE — 20/10/2026
+
+Diagnostic confirmé : la racine de public_html contient actuellement des fichiers PannacottaClub à la place de fichiers Missiona. La page racine exécute le bootstrap Pannacotta, qui attend une configuration MySQL absente du config.php de Missiona ; cela produit la réponse HTTP 500. Les sous-sites /pannacotaclub et /seve ne sont pas à remplacer.
+
+CONTENU À EXTRAIRE
+Cette archive restaure les fichiers Missiona de la sauvegarde « avant installation PannacottaClub » du 19/10/2026 : .htaccess, index.php, index.html, assets/css/style.css, assets/js/app.js, assets/img/logo.png, assets/img/apple-touch-icon.png et sw.js.
+
+PROCÉDURE HOSTINGER
+1. Dans hPanel > Gestionnaire de fichiers, ouvrez le dossier public_html du domaine missiona.eu.
+2. Faites d’abord une copie de sécurité des fichiers existants (au minimum .htaccess et index.php).
+3. Téléversez ce ZIP dans public_html et extrayez-le DANS public_html, en acceptant le remplacement des fichiers. Les chemins dans l’archive sont relatifs à la racine du site.
+4. À la racine de public_html seulement (pas dans /pannacotaclub), supprimez ou renommez les copies Pannacotta qui n’existaient pas dans la sauvegarde Missiona : api.php, install.php, manifest.webmanifest et includes/bootstrap.php. Gardez les versions qui sont dans /pannacotaclub/.
+5. Ne touchez pas à config.php, missiona-data, /seve ni /pannacotaclub. Aucune modification de base de données n’est requise.
+6. Testez https://missiona.eu/ puis https://missiona.eu/connexion. Si le navigateur affiche encore l’ancienne page, faites un rechargement forcé (Ctrl+F5) ou effacez les données de site/cache, à cause du service worker.
+
+Cette archive remplace uniquement les fichiers applicatifs listés ; elle ne modifie ni les données ni les identifiants.
